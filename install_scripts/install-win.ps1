@@ -12,6 +12,13 @@ $linuxInstallScript = "install-linux.bash"
 $dataPath = [Environment]::GetFolderPath([Environment+SpecialFolder]::ApplicationData)
 $appPath = Join-Path -Path $dataPath -ChildPath $appName
 
+# Ensure the script is run as Administrator
+
+if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
+  Write-Warning "You do not have Administrator rights to run this script! Please re-run as Administrator!"
+  exit 1
+}
+
 # Check if the app's directory already exists, if not, create it
 
 if (-not (Test-Path $appPath)) {
