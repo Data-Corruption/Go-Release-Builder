@@ -1,0 +1,43 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'src/**'
+      - 'install_scripts/**'
+      - '.github/workflows/build.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'src/**'
+      - 'install_scripts/**'
+      - '.github/workflows/build.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-go@v4
+      with:
+        go-version-file: 'go.mod'
+    - name: Make build.sh executable
+      run: chmod +x build.sh
+    - name: Build
+      run: ./build.sh
+    - name: Zip Release Files
+      run: |
+        zip -j ./dist/release-amd64.zip ./dist/bin-linux-amd64 ./install_scripts/install-linux.bash ./install_scripts/install-win.ps1
+        zip -j ./dist/release-arm64.zip ./dist/bin-linux-arm64 ./install_scripts/install-linux.bash ./install_scripts/install-win.ps1
+        zip -j ./dist/release-riscv64.zip ./dist/bin-linux-riscv64 ./install_scripts/install-linux.bash ./install_scripts/install-win.ps1
+    - name: Create Release Draft
+      uses: softprops/action-gh-release@v1
+      with:
+        draft: true
+        fail_on_unmatched_files: true
+        files: |
+          ./dist/release-amd64.zip
+          ./dist/release-arm64.zip
+          ./dist/release-riscv64.zip
