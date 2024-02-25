@@ -16,7 +16,6 @@ This Go project template streamlines the development and distribution process fo
 - Developers releasing projects on Linux and WSL transparently (see FAQ).
 - End users familiar with basic CLI operations.
 - Projects seeking a lightweight distribution method.
-- Anyone needing an effortless distribution setup that can build off of.
 
 ## Quick Start:
 
