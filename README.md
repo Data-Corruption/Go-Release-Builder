@@ -6,7 +6,7 @@
 
 ## Overview
 
-This Go project template streamlines the development and distribution process for applications targeting Linux and the Windows Subsystem for Linux (WSL). It offers two main features:
+This Go project template streamlines the development and distribution process for applications targeting Linux and the Windows Subsystem for Linux (WSL). It has a few main features:
 
 - **Automatic Release Drafting**: Automate your release process with GitHub Actions. Simply update the `docs/CHANGELOG.md` with a new entry and push to the main branch. When the workflow sees the new version it will build and create a release draft, ready for you to publish after reviewing it.
 
