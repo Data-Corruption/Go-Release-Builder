@@ -82,12 +82,17 @@ jobs:
     - name: Build
       # Build the binaries for target platforms
       run: ./scripts/build.sh
+    - name: Set MOD_NAME
+      run: |
+        echo "MOD_NAME=$(awk -F' ' '/module/ {print $2}' go.mod)" >> $GITHUB_ENV
     - name: Zip Release Files
       # Now that the binaries are built, zip them along with the install scripts
       run: |
-        zip -j ./svlens-linux-x64.zip ./bin/svlens/svlens-linux-amd64 ./scripts/install-linux.bash ./scripts/install-win.ps1
-        zip -j ./svlens-linux-arm64.zip ./bin/svlens/svlens-linux-arm64 ./scripts/install-linux.bash ./scripts/install-win.ps1
-        zip -j ./svlens-linux-riscv64.zip ./bin/svlens/svlens-linux-riscv64 ./scripts/install-linux.bash ./scripts/install-win.ps1
+        zip -j ./${MOD_NAME}-linux-x64.zip ./bin/${MOD_NAME}/${MOD_NAME}-linux-amd64 ./scripts/install-linux.bash ./scripts/install-win.ps1
+        zip -j ./${MOD_NAME}-linux-arm64.zip ./bin/${MOD_NAME}/${MOD_NAME}-linux-arm64 ./scripts/install-linux.bash ./scripts/install-win.ps1
+        zip -j ./${MOD_NAME}-linux-riscv64.zip ./bin/${MOD_NAME}/${MOD_NAME}-linux-riscv64 ./scripts/install-linux.bash ./scripts/install-win.ps1
+      env:
+        MOD_NAME: ${{ env.MOD_NAME }}
     - name: Create Release Draft
       # Create a release draft with the version and description from the CHANGELOG.md file.
       # The tag will be created and applied to the commit when you publish the release.
@@ -99,6 +104,8 @@ jobs:
         body: ${{ env.unescaped_description }}
         fail_on_unmatched_files: true
         files: |
-          ./svlens-linux-x64.zip
-          ./svlens-linux-arm64.zip
-          ./svlens-linux-riscv64.zip
+          ./${MOD_NAME}-linux-x64.zip
+          ./${MOD_NAME}-linux-arm64.zip
+          ./${MOD_NAME}-linux-riscv64.zip
+      env:
+        MOD_NAME: ${{ env.MOD_NAME }}
