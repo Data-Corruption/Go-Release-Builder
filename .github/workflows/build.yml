@@ -1,43 +1,104 @@
-name: Build
+# Triggered by a push or pull to main branch that includes changes to anything 
+# that affects the binary or the release process. It automatically creates a 
+# release draft if the version in the CHANGELOG.md file is not already tagged 
+# in the repository. It also zips the release files and attaches them to the 
+# release draft.
+name: Build and Draft Release
 
 on:
   push:
     branches: [ main ]
     paths:
-      - 'src/**'
-      - 'install_scripts/**'
       - '.github/workflows/build.yml'
+      - 'cmd/**'
+      - 'configs/**'
+      - 'internal/**'
+      - 'scripts/**'
+      - 'docs/CHANGELOG.md'
   pull_request:
     branches: [ main ]
     paths:
-      - 'src/**'
-      - 'install_scripts/**'
       - '.github/workflows/build.yml'
+      - 'cmd/**'
+      - 'configs/**'
+      - 'internal/**'
+      - 'scripts/**'
+      - 'docs/CHANGELOG.md'
 
 jobs:
-  build:
+  parse-changelog:
     runs-on: ubuntu-latest
+    outputs:
+      should_build: ${{ steps.check_version.outputs.should_build }}
+      version: ${{ steps.check_version.outputs.version }}
+      description: ${{ steps.check_version.outputs.description }}
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0 # Ensure all history and tags are fetched
+    - name: Extract Version and Description from docs/CHANGELOG.md
+      id: check_version
+      # Extract the most recent version and its description from the CHANGELOG.md file
+      # If the version is already tagged, it sets should_build to false
+      run: |
+        # Extract version and description
+        VERSION=$(sed -n 's/^## \[\(.*\)\] - .*/\1/p' docs/CHANGELOG.md | head -n 1)
+        DESCRIPTION=$(awk '/^## \['"$VERSION"'\]/ {flag=1; next} /^## \[/ {flag=0} flag {print}' docs/CHANGELOG.md)
+        # Escape newlines in the description, otherwise actions will freak out
+        DESCRIPTION_ESCAPED=$(echo "$DESCRIPTION" | sed ':a;N;$!ba;s/\n/\\n/g')
 
+        echo "VERSION: $VERSION"
+        echo "DESCRIPTION: $DESCRIPTION_ESCAPED"
+
+        # Check if the version is already tagged
+        if git tag -l "$VERSION" | grep -q "$VERSION"; then
+          echo "Version $VERSION is already tagged."
+          echo "should_build=false" >> $GITHUB_OUTPUT
+        else
+          echo "should_build=true" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "description=$DESCRIPTION_ESCAPED" >> $GITHUB_OUTPUT
+        fi
+          
+  build-and-release:
+    needs: parse-changelog
+    # If the version already exists as a tag, skip the build and release steps
+    if: needs.parse-changelog.outputs.should_build == 'true'
+    runs-on: ubuntu-latest
+    env:
+      VERSION: ${{ needs.parse-changelog.outputs.version }} # Used by the build script
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-go@v4
       with:
         go-version-file: 'go.mod'
-    - name: Make build.sh executable
-      run: chmod +x build.sh
-    - name: Build
-      run: ./build.sh
-    - name: Zip Release Files
+    - name: Unescape Description
       run: |
-        zip -j ./dist/release-amd64.zip ./dist/bin-linux-amd64 ./install_scripts/install-linux.bash ./install_scripts/install-win.ps1
-        zip -j ./dist/release-arm64.zip ./dist/bin-linux-arm64 ./install_scripts/install-linux.bash ./install_scripts/install-win.ps1
-        zip -j ./dist/release-riscv64.zip ./dist/bin-linux-riscv64 ./install_scripts/install-linux.bash ./install_scripts/install-win.ps1
+        echo "unescaped_description<<EOF" >> $GITHUB_ENV
+        echo "${{ needs.parse-changelog.outputs.description }}" | sed 's/\\n/\n/g' >> $GITHUB_ENV
+        echo "EOF" >> $GITHUB_ENV
+    - name: Make scripts/build.sh executable
+      run: chmod +x scripts/build.sh
+    - name: Build
+      # Build the binaries for target platforms
+      run: ./scripts/build.sh
+    - name: Zip Release Files
+      # Now that the binaries are built, zip them along with the install scripts
+      run: |
+        zip -j ./svlens-linux-x64.zip ./bin/svlens/svlens-linux-amd64 ./scripts/install-linux.bash ./scripts/install-win.ps1
+        zip -j ./svlens-linux-arm64.zip ./bin/svlens/svlens-linux-arm64 ./scripts/install-linux.bash ./scripts/install-win.ps1
+        zip -j ./svlens-linux-riscv64.zip ./bin/svlens/svlens-linux-riscv64 ./scripts/install-linux.bash ./scripts/install-win.ps1
     - name: Create Release Draft
+      # Create a release draft with the version and description from the CHANGELOG.md file.
+      # The tag will be created and applied to the commit when you publish the release.
       uses: softprops/action-gh-release@v1
       with:
         draft: true
+        tag_name: ${{ needs.parse-changelog.outputs.version }}
+        name: Release ${{ needs.parse-changelog.outputs.version }}
+        body: ${{ env.unescaped_description }}
         fail_on_unmatched_files: true
         files: |
-          ./dist/release-amd64.zip
-          ./dist/release-arm64.zip
-          ./dist/release-riscv64.zip
+          ./svlens-linux-x64.zip
+          ./svlens-linux-arm64.zip
+          ./svlens-linux-riscv64.zip

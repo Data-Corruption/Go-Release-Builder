@@ -1,12 +1,11 @@
 #!/bin/bash
 
-APP_NAME="example_app"
-
 INSTALL_DIR="/usr/local/bin" # This dir should already be in the system PATH
-EXECUTABLE_NAME="$APP_NAME"
 BINARY_PATH="unknown"
+# EXECUTABLE_NAME is dynamically set by the build script, if you wish to change it, do so there
+EXECUTABLE_NAME="example_app"
 
-declare -a binaries=("bin-linux-amd64" "bin-linux-arm64" "bin-linux-riscv64")
+declare -a binaries=("svlens-linux-amd64" "svlens-linux-arm64" "svlens-linux-riscv64")
 declare -a foundBinaries
 
 # Check each bin path to see if it exists in the current directory
@@ -52,7 +51,7 @@ if [[ ! -d "$INSTALL_DIR" ]]; then
   exit 1
 fi
 
-# Copy the binary to the install directory
+# Copy the binary to the install directory (overwrite if it exists)
 cp "$BINARY_PATH" "$INSTALL_DIR/$EXECUTABLE_NAME"
 # Check if the copy was successful
 if [ $? -ne 0 ]; then
@@ -63,5 +62,8 @@ fi
 # Make the executable... executable
 chmod +x "$INSTALL_DIR/$EXECUTABLE_NAME"
 
-echo "Successfully installed $APP_NAME to $INSTALL_DIR/$EXECUTABLE_NAME"
-echo "Please restart your terminal session to use $APP_NAME."
+# Allow the exe to use privileged ports
+setcap 'cap_net_bind_service=+ep' "$INSTALL_DIR/$EXECUTABLE_NAME"
+
+echo "Successfully installed $EXECUTABLE_NAME to $INSTALL_DIR/$EXECUTABLE_NAME"
+echo "Please restart your terminal session to use $EXECUTABLE_NAME."

@@ -6,10 +6,10 @@
 #   4. Checks if a Debian-based distribution is installed in WSL
 #   5. Executes the linux installation script with WSL
 
-$appName = "example_app"
-
 $linuxInstallScript = "install-linux.bash"
 $dataPath = [Environment]::GetFolderPath([Environment+SpecialFolder]::ApplicationData)
+# $appName is dynamically set by the build script, if you wish to change it, do so there
+$appName = "example_app"
 $appPath = Join-Path -Path $dataPath -ChildPath $appName
 
 # Ensure the script is run as Administrator
