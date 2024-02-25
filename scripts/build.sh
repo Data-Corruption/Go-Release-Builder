@@ -59,6 +59,8 @@ preBuild() {
 
   # Get the module name from go.mod
   MOD_NAME=$(awk -F' ' '/module/ {print $2}' "$PROJECT_ROOT/go.mod")
+  # Remove any trailing unwanted characters
+  MOD_NAME=$(echo "$MOD_NAME" | tr -d '\r\n')
 
   debug_print "MOD_NAME set to $MOD_NAME"
 

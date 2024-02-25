@@ -2,13 +2,15 @@
 
 ![banner image](docs/Assets/banner.png)
 
-[Go](https://go.dev/) project template for automatically creating releases with [GitHub Actions](https://docs.github.com/en/actions)  by simply updating a changelog, targeting Linux and [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) environments.
+[Go](https://go.dev/) project template for automatically creating releases with [GitHub Actions](https://docs.github.com/en/actions) by simply updating a changelog, targeting Linux and [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) environments.
 
 ## Overview
 
 This Go project template streamlines the development and distribution process for applications targeting Linux and the Windows Subsystem for Linux (WSL). It offers two main features:
 
 - **Automatic Release Drafting**: Automate your release process with GitHub Actions. Simply update the `docs/CHANGELOG.md` with a new entry and push to the main branch. When the workflow sees the new version it will build and create a release draft, ready for you to publish after reviewing it.
+
+- **Version Injection**: During the automatic build, it will inject the version from the changelog into the go build command. The result is the ability for things like version commands. `example_app -version` Will always print the correct version without you ever having to touch it :3
 
 - **Transparent WSL Operation**: Seamlessly execute your Go applications within WSL from the Windows command line, no need to preface commands with wsl. For more information, see the FAQ section below.
 
