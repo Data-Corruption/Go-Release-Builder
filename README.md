@@ -10,7 +10,7 @@ This Go project template streamlines the development and distribution process fo
 
 - **Automatic Release Drafting**: Automate your release process with GitHub Actions. Simply update the `docs/CHANGELOG.md` with a new entry and push to the main branch. When the workflow sees the new version it will build and create a release draft, ready for you to publish after reviewing it.
 
-- **Version Injection**: During the automatic build, it will inject the version from the changelog into the go build command. The result is the ability for things like version commands. `example_app -version` Will always print the correct version without you ever having to touch it :3
+- **Version Injection**: During the automatic build, it will inject the version from the changelog into the go build command. The result is the ability for things like version commands. The example `example_app version` will always print the correct version without you ever having to touch it :3
 
 - **Transparent WSL Operation**: Seamlessly execute your Go applications within WSL from the Windows command line, no need to preface commands with wsl. For more information, see the FAQ section below.
 
