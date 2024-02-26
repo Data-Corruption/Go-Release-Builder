@@ -8,22 +8,8 @@ name: Build and Draft Release
 on:
   push:
     branches: [ main ]
-    paths:
-      - '.github/workflows/build.yml'
-      - 'cmd/**'
-      - 'configs/**'
-      - 'internal/**'
-      - 'scripts/**'
-      - 'docs/CHANGELOG.md'
   pull_request:
     branches: [ main ]
-    paths:
-      - '.github/workflows/build.yml'
-      - 'cmd/**'
-      - 'configs/**'
-      - 'internal/**'
-      - 'scripts/**'
-      - 'docs/CHANGELOG.md'
 
 jobs:
   parse-changelog:
