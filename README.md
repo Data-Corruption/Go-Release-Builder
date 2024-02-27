@@ -15,7 +15,7 @@ This Go project template streamlines the development and distribution process fo
 - **Transparent WSL Operation**: Seamlessly execute your Go applications within WSL from the Windows command line, no need to preface commands with wsl. For more information, see the FAQ section below.
 
 ## Target Audience
-- Developers releasing projects on Linux and WSL transparently (see FAQ).
+- Developers releasing projects on Linux and WSL transparently. See the FAQ section below.
 - End users familiar with basic CLI operations.
 - Projects seeking a lightweight distribution method.
 

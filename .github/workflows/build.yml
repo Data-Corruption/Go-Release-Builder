@@ -1,8 +1,8 @@
-# Triggered by a push or pull to main branch that includes changes to anything 
-# that affects the binary or the release process. It automatically creates a 
+# Triggered by a push or pull to main branch, it automatically creates a 
 # release draft if the version in the CHANGELOG.md file is not already tagged 
-# in the repository. It also zips the release files and attaches them to the 
-# release draft.
+# in the repository. The draft includes the version and description from the
+# CHANGELOG.md file, and the release assets are the binaries and install scripts
+# for the target platforms.
 name: Build and Draft Release
 
 on:
