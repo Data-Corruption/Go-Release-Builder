@@ -1,5 +1,9 @@
 # Changelog
 
+## [v0.2.3] - 2024-03-31
+### Fixed
+- Fixed bin paths in install bash script
+
 ## [v0.2.2] - 2024-02-25
 ### Fixed
 - Added "v" to the front of the version so it now properly adheres to the semantic versioning standard

@@ -23,9 +23,6 @@ if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 
 if (-not (Test-Path $appPath)) {
   New-Item -ItemType Directory -Path $appPath | Out-Null
-  Write-Host "The directory '$appPath' has been created."
-} else {
-  Write-Host "The directory '$appPath' already exists."
 }
 
 # Add the app's directory to the system PATH
@@ -40,9 +37,6 @@ function PathExistsInPath($path, $currentPath) {
 if (-not (PathExistsInPath $appPath $currentPath)) {
   $newPath = "$currentPath;$appPath"
   [Environment]::SetEnvironmentVariable("PATH", $newPath, "Machine")
-  Write-Host "The path '$appPath' has been added to the PATH."
-} else {
-  Write-Host "The path '$appPath' is already in the PATH."
 }
 
 # Create the windows side run script
@@ -64,7 +58,6 @@ Set-ExecutionPolicy RemoteSigned
 
 # Check if a Debian-based distribution is installed in WSL
 
-# Define the list of Debian-based distributions to check for
 $debianBasedDistros = @("Ubuntu", "Debian", "kali-linux", "Pengwin")
 # Get the list of all installed WSL distributions, then convert it to an array in case there's only one
 $installedDistros = wsl --list --quiet
@@ -80,8 +73,8 @@ foreach ($distro in $debianBasedDistros) {
 # If no Debian-based distro was found, ask the user if they want to continue anyway
 if (-not $foundDebianBased) {
   Write-Host "Failed to detect a Debian-based distribution installed in WSL."
-  $userChoice = Read-Host "Do you want to attempt the installation anyway? (yes/no)"
-  if ($userChoice -ne "yes") {
+  $userChoice = Read-Host "Do you want to attempt the installation anyway? (y/n)"
+  if ($userChoice -ne "y") {
     Write-Host "Exiting installation.."
     exit 1
   }

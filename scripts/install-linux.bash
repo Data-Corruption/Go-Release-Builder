@@ -3,9 +3,9 @@
 INSTALL_DIR="/usr/local/bin" # This dir should already be in the system PATH
 BINARY_PATH="unknown"
 # EXECUTABLE_NAME is dynamically set by the build script, if you wish to change it, do so there
-EXECUTABLE_NAME="example_app"
+EXECUTABLE_NAME=""
 
-declare -a binaries=("svlens-linux-amd64" "svlens-linux-arm64" "svlens-linux-riscv64")
+declare -a binaries=("$EXECUTABLE_NAME-linux-amd64" "$EXECUTABLE_NAME-linux-arm64" "$EXECUTABLE_NAME-linux-riscv64")
 declare -a foundBinaries
 
 # Check each bin path to see if it exists in the current directory
